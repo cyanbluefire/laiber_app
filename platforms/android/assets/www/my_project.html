@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>主页</title>
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link rel="stylesheet" href="css/pull_refresh.css" />
+		<script type="text/javascript" src="js/jquery-2.1.3.min.js" ></script>
+		<script type="text/javascript">
+//		$(document).ready(function(){
+//			$('li').bind("click",function(){
+//				alert()
+//			})
+//		})			
+		</script>
+	</head>
+
+	<body>
+		<div class="page">
+			<header data-am-widget="header" class="am-header am-header-default">
+
+				<div class="am-header-left am-header-nav">
+					<i class="am-icon-angle-left" onclick="history.back()"></i>
+					<a href="#left-link" class="">
+						<i></i>
+					</a>
+				</div>
+				<h1 class="am-header-title">
+				<a href="#title-link" class="">我的项目</a>
+		  </h1>
+				<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
+					<a href="javascript: void(0)" class="am-menu-toggle">
+					</a>
+
+				</nav>
+			</header>
+
+			
+			<div id="wrapper" data-am-widget="list_news" class="am-list-news am-list-news-default">
+				<div class="am-list-news-bd">
+					<div class="pull-action loading" id="pull-down">
+						<span class="am-icon-arrow-down pull-label" id="pull-down-label"> 下拉刷新</span>
+						<span class="am-icon-spinner am-icon-spin"></span>
+					</div>
+					<ul class="am-list" id="events-list">
+						<li class="am-list-item-desced">
+							<div class="am-list-item-text">
+								正在加载内容...
+							</div>
+						</li>
+					</ul>
+					<div class="pull-action" id="pull-up">
+						<span class="am-icon-arrow-down pull-label" id="pull-up-label"> 上拉加载更多</span>
+						<span class="am-icon-spinner am-icon-spin"></span>
+					</div>
+				</div>
+				
+
+			</div>
+		</div>
+		<script src="js/jquery-2.1.3.min.js"></script>
+		<script src="js/handlebars.min.js"></script>
+		<script type="text/x-handlebars-template" id="tpi-list-item">
+			{{#each posts}}
+			<li class="am-list-item-desced" ontouchstart="storageTime()" ontouchend="readTime(this)">
+				<p id="id" style="display: none;">{{post.id}}</p>
+				<a href="#" class="am-list-item-hd" target="_blank" id="title">{{post.title}}</a>
+				<div class="am-list-item-text" id="content">{{post.created_at}}</div>
+			</li>
+			{{/each}}
+		</script>
+		<script src="js/amazeui.min.js"></script>
+		<script type="text/javascript">
+
+			var fresh_count = 5;
+			var token = localStorage.getItem('token');
+			URL = "http://laiber.wenjiangtao.me:3000";
+			(function($) {
+				var EventsList = function(element, options) {
+					//  	console.log('new Eventslist');
+					var $main = $('#wrapper');
+					var $list = $main.find('#events-list');
+					var $pullDown = $main.find('#pull-down');
+					var $pullDownLabel = $main.find('#pull-down-label');
+					var $pullUp = $main.find('#pull-up');
+					var topOffset = -$pullDown.outerHeight();
+					this.compiler = Handlebars.compile($('#tpi-list-item').html());
+					this.prev = this.next = this.start = options.params.start;
+					this.total = null;
+					this.fresh = function fresh(fresh_type, _id, pull_up) {
+						var DATA;
+						var _this = this;
+						var $el = $pullDown;
+						if (fresh_type === 'load') {
+							$el = $pullUp;
+						}
+						//pull_up值为true是下拉刷新，false是直接刷新
+						switch (fresh_type) {
+							case 'refresh':
+								if (!pull_up) {
+									//    				console.log('type==refresh');
+									DATA = {
+										"token":token
+									};
+								}
+								if (pull_up) {
+									console.log('pull up');
+									DATA = {
+										"token":token
+									};
+								}
+								break;
+							case 'load':
+								DATA = {
+									"token":token
+								};
+								break;
+							default:
+								break;
+						}
+						$.ajax({
+							type: "post",
+							url: URL + "/mobile_app/user/getRootPosts",
+							async: true,
+							data: DATA,
+							dataType: "json",
+							success: function(data) {
+								console.log(JSON.stringify(data));
+								var html = _this.compiler(data);
+								if (fresh_type === 'refresh') {
+									$list.children('li').first().before(html);
+									localStorage.setItem('posts_for_top[id]', data.posts[0].post.id);
+									if (!pull_up) {
+										if(data.posts.length > 0 )
+										localStorage.setItem('posts_for_bottom[id]', data.posts[data.posts.length - 1].post.id);
+									}
+								} else if (fresh_type === 'load') {
+									$list.append(html);
+									if(data.posts.length > 0 )
+									localStorage.setItem('posts_for_bottom[id]', data.posts[data.posts.length - 1].post.id);										
+								} else {
+									$list.html(html);
+								}
+								// refresh iScroll
+								setTimeout(function() {
+									_this.iScroll.refresh();
+								}, 100);
+							},
+							error: function(data) {
+								//    		console.log("errorData:"+data);
+							},
+							complete: function() {
+								_this.resetLoading($el);
+								if (fresh_type !== 'load') {
+									_this.iScroll.scrollTo(0, topOffset, 800, $.AMUI.iScroll.utils.circular);
+								}
+							}
+						});
+					};
+
+//					function getJsonLast(data) {
+//						console.log('getJsonLast');
+//						var len = data.posts.length;
+//						if (len > 0)
+//							return data.posts[data.posts.length - 1].post.id;
+//						else {
+//							console.log('没有更多了');
+//							return null;
+//						}
+//					}
+					this.setLoading = function($el) {
+						$el.addClass('loading');
+					};
+					this.resetLoading = function($el) {
+						$el.removeClass('loading');
+					};
+					// 
+					this.init = function() {
+						//    	console.log('init');
+						var myScroll = this.iScroll = new $.AMUI.iScroll('#wrapper', {});
+						// myScroll.scrollTo(0, topOffset);
+						var _this = this;
+						var pullFormTop = false;
+						var pullStart;
+						this.fresh('refresh', 0, false);
+						myScroll.on('scrollStart', function() {
+							if (this.y >= topOffset) {
+								pullFormTop = true;
+							}
+							pullStart = this.y;
+							// console.log(this);
+						});
+						myScroll.on('scrollEnd', function() {
+//							console.log('this.directionY::'+this.directionY);
+							if (pullFormTop && this.directionY === -1) {
+								_this.handlePullDown();
+							}
+							pullFormTop = false;
+							// pull up to load more
+							if (pullStart === this.y && (this.directionY === 1)) {
+								_this.handlePullUp();
+							}
+						});
+					};
+					this.handlePullDown = function() {
+						console.log('handle pull down');
+						this.setLoading($pullDown);
+						var _id = localStorage.getItem('posts_for_top[id]');
+						this.fresh('refresh', _id, false);
+					};
+					this.handlePullUp = function() {
+						console.log('handle pull up');
+						this.setLoading($pullUp);
+						var _id = localStorage.getItem('posts_for_bottom[id]')
+						this.fresh('load', _id, true);
+					}
+				};
+				//	here start
+				$(function() {
+					//  	console.log('start');
+					var app = new EventsList(null, {
+						URL: URL + '/mobile_app/user/getRootPosts',
+						params: {
+							start: 10
+						}
+					});
+					app.init();
+				});
+				document.addEventListener('touchmove', function(e) {
+					e.preventDefault();
+				}, false);
+			})(window.jQuery);
+
+			function logout() {
+				console.log('logout()');
+				var confirm_logout = confirm("确认退出登录?")
+				if (confirm_logout) {
+					console.log('logout true');
+					window.location = "login.html";
+					window.localStorage.removeItem('token');
+				} else {
+					console.log('logout false');
+				}
+			}
+
+			function showDetails(item) {
+				//		alert($(this).find("li").val());
+				console.log('showDetails');
+				//		console.log($(item).children("#content").html());
+				//		console.log($(item).children("#title").html());
+				//		console.log($(item).children("#name").html());
+				var id = $(item).children('#id').html();
+				
+				console.log(id);
+//				var dataFormLi = $.param({
+//					data: '',
+//					title: $(item).children("#title").html(),
+//					content: $(item).children("#content").html(),
+//					name: $(item).children("#name").html(),
+//					id: id
+//				});
+//				//		console.log($.param(dataFormLi));
+//				//		var dataFormLi = [$(item).children("#title").html(),$(item).children("#name").html(),$(item).val(),$(item).children("#content").html()];
+//				var d = JSON.stringify(dataFormLi);
+				window.location = "article_details.html?id=" + id;
+				//		alert($(this).css("color","red"));
+				//var dataFormLi = [$('#title')]
+			}
+				$(function(){
+//			 		alert()
+//			 		$('.am-list-item-desced').click(function(){
+//			 			alert('am-list-item-desced');
+//			 			$(this).css("color","red");
+//			 		});
+							
+			 	})
+				
+				window.touchStartTime;
+				window.start;
+				function storageTime(){
+//					localStorage.setItem('clickTime',new Date().getMilliseconds());
+				window.touchStartTime = new Date().getTime();
+				console.log("startTime::"+window.touchStartTime);
+				
+//				window.start = window.touchStartY;
+				
+				} 
+				function readTime(item){
+					localStorage.getItem('clickTime');
+					var endTime = new Date().getTime();
+					console.log('endTime::'+endTime);
+					if(endTime - window.touchStartTime < 100){
+						console.log('click')
+						var id = $(item).children('#id').html();
+						console.log(id);
+						window.location = "article_details.html?id=" + id;			
+					}
+				}
+		</script>
+	</body>
+
+</html>
+<!--http://pnc.co.il/dev/iscroll-5-pull-to-refresh-and-infinite-demo.html-->

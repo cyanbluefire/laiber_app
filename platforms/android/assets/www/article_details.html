@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>注册</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="shortcut icon" href="resources/images/favicon.ico" />
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link href="css/app.css" rel="stylesheet" type="text/css" />
+
+		<script src="js/jquery-2.1.3.min.js" type="text/javascript"></script>
+		<script src="js/md5.js" type="text/javascript"></script>
+		<script src="js/amazeui.min.js"></script>
+		<script src="js/ajax.js" type="text/javascript"></script>
+		<script src="js/handlebars.min.js"></script>
+		
+		<script type="text/javascript">
+	
+		</script>
+
+	</head>
+
+	<body>
+<header data-am-widget="header" class="am-header am-header-default">
+
+				<div class="am-header-left am-header-nav">
+					<i class="am-icon-angle-left" onclick="history.back()"></i>
+
+					<a href="#left-link" class="">
+						<i></i>
+					</a>
+				</div>
+				<h1 class="am-header-title">
+				<a href="#title-link" class="">帖子</a>
+		  </h1>
+				<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
+					<a href="javascript: void(0)" class="am-menu-toggle">
+						<i class="am-icon-star-o" onclick="favorite(this)" id="favorite"></i>
+					</a>
+				</nav>
+			</header>
+
+		
+
+		<div id="wrapper" data-am-widget="list_news" class="am-list-news am-list-news-default">
+			
+		  <div id="scroller">
+			
+				<article class="am-article">
+					<p id="details_id" style="display: none;"></p>
+					<div class="am-article-hd">
+						<h1 class="am-article-title" id="details_title"></h1>
+						<p class="am-article-meta" id="details_name"></p>
+					</div>
+		
+					<div class="am-article-bd">
+						<p class="am-article-lead" id="details_content"></p>
+					</div>
+					<button type="button" class="am-btn am-btn-block" id="comment">评论</button>
+				</article>
+		   <div id="pullDown">
+				<span class="pullDownIcon"></span><span class="pullDownLabel">下拉刷新...</span>
+		   </div>
+		   <ul id="thelist">
+			<!--在此显示加载的-->
+		   </ul>
+		   <div id="pullUp">
+		    <span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
+		   </div>
+		  </div>
+		</div>
+
+	
+
+	<script type="text/x-handlebars-template" id="tpi-list-item">
+			{{#each posts}}
+			<li style="list-style-type:none;">
+				<article class="am-comment">
+					<a href="#link-to-user-home">
+						<img src="img/portrait.jpg" alt="" class="am-comment-avatar" width="48" height="48" />
+					</a>
+		
+					<div class="am-comment-main">
+						<header class="am-comment-hd">
+							<!--<h3 class="am-comment-title">评论标题</h3>-->
+							<div class="am-comment-meta">
+								<a href="#link-to-user" class="am-comment-author">{{user.name}}</a> 评论于
+								<time datetime="2013-07-27T04:54:29-07:00" title="2013年7月27日 下午7:54 格林尼治标准时间+0800">{{post.created_at}}</time>
+							</div>
+						</header>
+		
+						<div class="am-comment-bd">
+							{{post.content}}
+						</div>
+					</div>
+				</article>
+				</li>
+			{{/each}}
+	</script>
+	
+	<script src="js/handlebars.min.js"></script>
+	<script src="js/iscroll.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		window.URL = "http://laiber.wenjiangtao.me:3000";
+		window.id = getURLParameter('id');
+		console.log("parent_post[id]::"+id);
+		window.compiler = Handlebars.compile($('#tpi-list-item').html());
+		window.list = $('#thelist');
+		
+		function getURLParameter(name) {
+			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(window.location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+		}
+		$.ajax({
+			type:"post",
+			url:URL+"/mobile_app/posts/get",
+			async:true,
+			data:{
+					"posts[num]": 10,
+					"parent_post[id]":id,
+					
+			},
+			dataType:"json",
+			success:function(data){
+				console.log('data::'+JSON.stringify(data));
+				$('#details_title').html(data.parent_post.post.title);
+				$('#details_content').html(data.parent_post.post.content);
+				$('#details_name').html(data.parent_post.user.name);
+				var el_class;
+				if(data.parent_post.isFavor == true){
+					console.log('true')
+					el_class = 'am-icon-star';
+				}else{
+					console.log('false')
+					el_class = 'am-icon-star-o';
+				}
+					$('#favorite').attr('class',el_class);
+				
+//				$('#details_id').html(getURLParameter('id'));	
+				var refresh_html = window.compiler(data);
+				window.list.append(refresh_html);
+				localStorage.setItem('top_comment[id]', data.posts[0].post.id);
+				if(data.posts.length > 0)
+				localStorage.setItem('bottom_comment[id]', data.posts[data.posts.length - 1].post.id);
+			},
+			error:function(data){
+						console.log("服务器开小差了，稍后重试哦~");				
+			}
+		});
+		
+//			$(function() {
+//				function getURLParameter(name) {
+//						return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(window.location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+//					}
+//					//var data =getURLParameter('data');
+//				console.log(getURLParameter('title'));
+//				$('#details_title').html(getURLParameter('title'));
+//				$('#details_content').html(getURLParameter('content'));
+//				$('#details_name').html(getURLParameter('name'));
+//				$('#details_id').html(getURLParameter('id'));
+//			});	
+	
+	//初始化绑定iScroll控件 
+	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	document.addEventListener('DOMContentLoaded', loaded, false);
+	URL = "http://laiber.wenjiangtao.me:3000";
+	/*
+	 * 
+	 * 点击评论
+	 */
+	$(function(){
+		$('#comment').click(function(){
+			console.log("window.id::"+window.id);
+			window.location = "comment.html?id="+window.id;
+		})
+	})
+		
+		/*json数据显示*/
+//		compiler = Handlebars.compile($('#tpi-list-item').html());
+		
+		var fresh_count = 1;
+		function fresh(fresh_type, _id, pull_up) {
+		//    	console.log('fresh function()');
+		var $el = $('#pullDown');
+		if (fresh_type === 'load') {
+			$el = $('#pullUp');
+		}
+		var DATA;
+		//pull_up值为true是下拉刷新，false是直接刷新
+		switch (fresh_type) {
+			case 'refresh':
+				if (!pull_up) {
+					//    				console.log('type==refresh');
+					DATA = {
+						"posts[num]": fresh_count
+					};
+				}
+				if (pull_up) {
+					console.log('pull up');
+					DATA = {
+						"posts[num]": fresh_count,
+						"posts_for_top[id]": _id,
+						"parent_post[id]":window.id
+					};
+				}
+				break;
+			case 'load':
+				DATA = {
+					"parent_post[id]":window.id,
+					"posts[num]": fresh_count,
+					"posts_for_bottom[id]": _id
+				};
+				break;
+			default:
+				break;
+		}
+		$.ajax({
+			type: "post",
+			url: URL + "/mobile_app/posts/get",
+			async: true,
+			data: DATA,
+			dataType: "json",
+			success: function(data) {
+				console.log(JSON.stringify(data));
+				var html = window.compiler(data);
+//				var list = $('#thelist');
+				var list = window.list;
+				if (fresh_type === 'refresh') {
+					list.children('li').first().before(html);
+					localStorage.setItem('top_comment[id]', data.posts[0].post.id);
+					if (!pull_up && data.posts.length > 0) {
+						localStorage.setItem('bottom_comment[id]', data.posts[data.posts.length - 1].post.id);
+					}
+				} else if (fresh_type === 'load') {
+					list.append(html);
+					if(data.posts.length > 0 )
+						localStorage.setItem('bottom_comment[id]', data.posts[data.posts.length - 1].post.id);										
+				} else {
+					list.html(html);
+				}
+			},
+			error: function(data) {
+				//    		console.log("errorData:"+data);
+			},
+			complete: function() {
+				resetLoading($el);
+			}
+		});
+	};
+		resetLoading = function($el){
+			$el.removeClass('loading');
+		}
+		setLoading = function($el) {
+						$el.addClass('loading');
+		};
+		/**
+	  * 初始化iScroll控件
+	  */
+	  function loaded() {
+	   pullDownEl = document.getElementById('pullDown');
+	   pullDownOffset = pullDownEl.offsetHeight;
+	   pullUpEl = document.getElementById('pullUp');
+	   pullUpOffset = pullUpEl.offsetHeight;
+	   myScroll = new iScroll('wrapper', {
+	    scrollbarClass: 'myScrollbar', /* 重要样式 */
+	    useTransition: false,
+	    topOffset: pullDownOffset,
+	    onRefresh: function () {
+	     if (pullDownEl.className.match('loading')) {
+	      pullDownEl.className = '';
+	      pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+	     } else if (pullUpEl.className.match('loading')) {
+	      pullUpEl.className = '';
+	      pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+	     }
+	    },
+	    onScrollMove: function () {
+	     if (this.y > 5 && !pullDownEl.className.match('flip')) {
+	      pullDownEl.className = 'flip';
+	      pullDownEl.querySelector('.pullDownLabel').innerHTML = '松手开始更新...';
+	      this.minScrollY = 0;
+	     } else if (this.y < 5 && pullDownEl.className.match('flip')) {
+	      pullDownEl.className = '';
+	      pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+	      this.minScrollY = -pullDownOffset;
+	     } else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+	      pullUpEl.className = 'flip';
+	      pullUpEl.querySelector('.pullUpLabel').innerHTML = '松手开始更新...';
+	      this.maxScrollY = this.maxScrollY;
+	     } else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+	      pullUpEl.className = '';
+	      pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+	      this.maxScrollY = pullUpOffset;
+	     }
+	    },
+	    onScrollEnd: function () {
+		var _id;
+	     if (pullDownEl.className.match('flip')) {
+			console.log('pullDown');
+	      pullDownEl.className = 'loading';
+	      pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
+		  _id = localStorage.getItem('top_comment[id]');
+		  fresh('refresh', _id, true);
+		  setLoading($('#pullDown'));
+     } else if (pullUpEl.className.match('flip')) {
+			console.log('pullUp');
+	      pullUpEl.className = 'loading';
+	      pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
+		  _id=localStorage.getItem('bottom_comment[id]');
+	      fresh('load', _id, false);// Execute custom function (ajax call?)
+			setLoading($('#pullUp'));
+	     }
+	    }
+	   });
+	   setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
+	  }
+	
+	/*
+	 * 收藏or取消收藏
+	 */
+	function favorite(el){
+		var setFavorite;
+		if($(el).attr('class') == 'am-icon-star-o'){
+			setFavorite = true;
+		}else{
+			setFavorite = false;
+		}
+//			$(el).attr('class','am-icon-star');
+			$.ajax({
+				type:"post",
+				url:window.URL+"/mobile_app/user/setPostFavor",
+				async:true,
+				dataType:'json',
+				data:{
+					"isFavor":setFavorite,"post[id]":window.id,"token":localStorage.getItem('token')
+				},
+				success:function(data){
+					if(setFavorite){
+						$(el).attr('class','am-icon-star');
+						alert('收藏成功！');
+					}else{
+						$(el).attr('class','am-icon-star-o');
+						alert('取消收藏！');
+					}
+
+				},
+				error:function(data){
+					console.log('error');
+				}
+			});
+	}
+		</script>
+		
+		
+	</body>
+
+</html>

@@ -1,0 +1,25 @@
+/*body {TEXT-ALIGN: center;}*/
+.form{
+	padding: 30px;
+}
+.row{
+	padding: 10px;
+}
+.mybtn{
+	background: #0A0A0A;
+	color: #ffffff;
+}
+.logo{
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+	padding: 10px;
+	
+}
+.my-article{
+	padding: 20px;
+}
+
+.my-input{
+	width: inherit;
+}
