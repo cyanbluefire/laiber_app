@@ -32,6 +32,13 @@ module.exports = [
         "clobbers": [
             "CameraPopoverHandle"
         ]
+    },
+    {
+        "file": "plugins/com.chariotsolutions.toast.plugin/www/phonegap-toast.js",
+        "id": "com.chariotsolutions.toast.plugin.Toasty",
+        "clobbers": [
+            "toast"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -39,7 +46,8 @@ module.exports.metadata =
 {
     "cordova-plugin-whitelist": "1.0.0",
     "org.apache.cordova.console": "0.2.13",
-    "org.apache.cordova.camera": "0.3.6"
+    "org.apache.cordova.camera": "0.3.6",
+    "com.chariotsolutions.toast.plugin": "1.1.1"
 }
 // BOTTOM OF METADATA
 });

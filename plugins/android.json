@@ -16,6 +16,12 @@
                             "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
                             "count": 1
                         }
+                    ],
+                    "/widget": [
+                        {
+                            "xml": "<feature name=\"Toasty\"><param name=\"android-package\" value=\"com.chariotsolutions.toast.plugin.ToastPlugin\" /></feature>",
+                            "count": 1
+                        }
                     ]
                 }
             },
@@ -39,6 +45,9 @@
             "PACKAGE_NAME": "io.cordova.hellocordova"
         },
         "org.apache.cordova.camera": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "com.chariotsolutions.toast.plugin": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },

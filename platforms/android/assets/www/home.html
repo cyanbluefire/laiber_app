@@ -8,12 +8,52 @@
 		<link rel="stylesheet" href="css/amazeui.min.css" />
 		<link rel="stylesheet" href="css/pull_refresh.css" />
 		<script type="text/javascript" src="js/jquery-2.1.3.min.js" ></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="cordova_plugins.js"></script>
 		<script type="text/javascript">
-//		$(document).ready(function(){
-//			$('li').bind("click",function(){
-//				alert()
-//			})
-//		})			
+		$(document).ready(function(){
+			console.log('ready');
+//			window.plugins.toast('再按一次退出');
+//			if(window.plus){
+//				plusReady();
+//			}else{
+//				document.addEventListener('plusready',plusReady,false);
+//			}
+//			
+//			function plusReady(){
+//				alert('lalala');
+//				plus.nativeUI.toast('啦啦啦');
+//			}
+
+			document.addEventListener('backbutton',backButton,false);
+			
+			function backButton(){
+			toast.showShort('再按一次退出程序');
+			document.removeEventListener('backbutton',backButton,false);
+			
+			document.addEventListener('backbutton',exitApp,false);
+			var intervalID = window.setInterval(function(){
+				window.clearInterval(intervalID);
+				document.removeEventListener('backbutton',exitApp,false);
+				document.addEventListener('backbutton',backButton,false);
+			},3000);
+			}
+			
+			function exitApp(){
+				navigator.app.exitApp();				
+			}
+		})
+		
+//		document.addEventListener('deviceready',onDeviceReady(),false);
+//		
+//		onDeviceReady(){
+//			alert("ready");
+//			document.addEventListener('backbutton',backButton,false);
+//			function backButton(){
+//				alert('back');
+//			}
+//		}
+		
 		</script>
 	</head>
 
@@ -284,6 +324,7 @@
 					console.log('logout true');
 					window.location = "login.html";
 					window.localStorage.removeItem('_id');
+
 				} else {
 					console.log('logout false');
 				}

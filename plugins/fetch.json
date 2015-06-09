@@ -22,5 +22,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.chariotsolutions.toast.plugin": {
+        "source": {
+            "type": "registry",
+            "id": "com.chariotsolutions.toast.plugin"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
