@@ -23,3 +23,7 @@
 .my-input{
 	width: inherit;
 }
+
+.box{
+	background: gray;
+}
