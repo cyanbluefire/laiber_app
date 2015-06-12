@@ -202,7 +202,7 @@
 					};
 				}
 				if (pull_up) {
-					console.log('pull up');
+					console.log('pull down');
 					DATA = {
 						"posts[num]": fresh_count,
 						"posts_for_top[id]": _id,
@@ -241,7 +241,8 @@
 				var list = window.list;
 				if (fresh_type === 'refresh') {
 					list.children('li').first().before(html);
-					localStorage.setItem('top_comment[id]', data.posts[0].post.id);
+					if(data.posts.length > 0)
+						localStorage.setItem('top_comment[id]', data.posts[0].post.id);
 					if (!pull_up && data.posts.length > 0) {
 						localStorage.setItem('bottom_comment[id]', data.posts[data.posts.length - 1].post.id);
 					}

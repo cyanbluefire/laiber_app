@@ -15,6 +15,10 @@
                         {
                             "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -48,6 +52,9 @@
             "PACKAGE_NAME": "io.cordova.hellocordova"
         },
         "com.chariotsolutions.toast.plugin": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "org.apache.cordova.dialogs": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },
