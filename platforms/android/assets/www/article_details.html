@@ -48,7 +48,7 @@
 		<div id="wrapper" data-am-widget="list_news" class="am-list-news am-list-news-default">
 			
 		  <div id="scroller">
-			
+			<div>
 				<article class="am-article">
 					<p id="details_id" style="display: none;"></p>
 					<div class="am-article-hd">
@@ -60,12 +60,16 @@
 						<p class="am-article-lead" id="details_content"></p>
 					</div>
 					<button type="button" class="am-btn am-btn-block" id="comment">评论</button>
-				</article>
+				</article>				
+			</div>
+
 		   <div id="pullDown">
 				<span class="pullDownIcon"></span><span class="pullDownLabel">下拉刷新...</span>
 		   </div>
 		   <ul id="thelist">
 			<!--在此显示加载的-->
+			<li class="am-list-item-desced">
+			</li>
 		   </ul>
 		   <div id="pullUp">
 		    <span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
@@ -117,7 +121,7 @@
 			url:URL+"/mobile_app/posts/get",
 			async:true,
 			data:{
-					"posts[num]": 10,
+					"posts[num]": 2,
 					"parent_post[id]":id,
 					
 			},

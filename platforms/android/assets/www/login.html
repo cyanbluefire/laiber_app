@@ -50,6 +50,8 @@
 			<a href="#" style="position: absolute;right: 30px;">忘记密码？</a>
 		</div>
 
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="cordova_plugins.js"></script>
 		<script type="text/javascript">
 			window.localhost = "localhost:3000";
 			var local_userid = "token";
@@ -97,7 +99,7 @@
 							_id = data.token;
 							if (window.localStorage) {
 								window.localStorage.setItem(local_userid, _id);
-								alert("登录成功！");
+								toast.showShort("登录成功！");
 								window.location = "home.html";
 //								window.plugins.toast('登录成功！');
 //								window.location = "home.html";

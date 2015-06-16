@@ -7,53 +7,52 @@
 		<title>主页</title>
 		<link rel="stylesheet" href="css/amazeui.min.css" />
 		<link rel="stylesheet" href="css/pull_refresh.css" />
-		<script type="text/javascript" src="js/jquery-2.1.3.min.js" ></script>
-		<script type="text/javascript" src="cordova.js"></script>
-		<script type="text/javascript" src="cordova_plugins.js"></script>
+		<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+		<!--<script type="text/javascript" src="cordova.js"></script>-->
+		<!--<script type="text/javascript" src="cordova_plugins.js"></script>-->
 		<script type="text/javascript">
-		$(document).ready(function(){
-			console.log('ready');
-//			window.plugins.toast('再按一次退出');
-//			if(window.plus){
-//				plusReady();
-//			}else{
-//				document.addEventListener('plusready',plusReady,false);
-//			}
-//			
-//			function plusReady(){
-//				alert('lalala');
-//				plus.nativeUI.toast('啦啦啦');
-//			}
-
-			document.addEventListener('backbutton',backButton,false);
-			
-			function backButton(){
-			toast.showShort('再按一次退出程序');
-			document.removeEventListener('backbutton',backButton,false);
-			
-			document.addEventListener('backbutton',exitApp,false);
-			var intervalID = window.setInterval(function(){
-				window.clearInterval(intervalID);
-				document.removeEventListener('backbutton',exitApp,false);
+			$(document).ready(function(){
+				console.log('ready');
+	//			window.plugins.toast('再按一次退出');
+	//			if(window.plus){
+	//				plusReady();
+	//			}else{
+	//				document.addEventListener('plusready',plusReady,false);
+	//			}
+	//			
+	//			function plusReady(){
+	//				alert('lalala');
+	//				plus.nativeUI.toast('啦啦啦');
+	//			}
+	
 				document.addEventListener('backbutton',backButton,false);
-			},3000);
-			}
+				
+				function backButton(){
+				toast.showShort('再按一次退出程序');
+				document.removeEventListener('backbutton',backButton,false);
+				
+				document.addEventListener('backbutton',exitApp,false);
+				var intervalID = window.setInterval(function(){
+					window.clearInterval(intervalID);
+					document.removeEventListener('backbutton',exitApp,false);
+					document.addEventListener('backbutton',backButton,false);
+				},3000);
+				}
+				
+				function exitApp(){
+					navigator.app.exitApp();				
+				}
+			})
 			
-			function exitApp(){
-				navigator.app.exitApp();				
-			}
-		})
-		
-//		document.addEventListener('deviceready',onDeviceReady(),false);
-//		
-//		onDeviceReady(){
-//			alert("ready");
-//			document.addEventListener('backbutton',backButton,false);
-//			function backButton(){
-//				alert('back');
-//			}
-//		}
-		
+	//		document.addEventListener('deviceready',onDeviceReady(),false);
+	//		
+	//		onDeviceReady(){
+	//			alert("ready");
+	//			document.addEventListener('backbutton',backButton,false);
+	//			function backButton(){
+	//				alert('back');
+	//			}
+	//		}
 		</script>
 	</head>
 
@@ -70,7 +69,7 @@
 				</div>
 				<h1 class="am-header-title">
 				<a href="#title-link" class="">主页</a>
-		  </h1>
+		  		</h1>
 				<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 					<a href="javascript: void(0)" class="am-menu-toggle">
 						<i class="am-menu-toggle-icon am-icon-bars"></i>
@@ -119,7 +118,6 @@
 				</nav>
 			</header>
 
-			
 			<div id="wrapper" data-am-widget="list_news" class="am-list-news am-list-news-default">
 				<div class="am-list-news-bd">
 					<div class="pull-action loading" id="pull-down">
@@ -128,9 +126,6 @@
 					</div>
 					<ul class="am-list" id="events-list">
 						<li class="am-list-item-desced">
-							<div class="am-list-item-text">
-								正在加载内容...
-							</div>
 						</li>
 					</ul>
 					<div class="pull-action" id="pull-up">
@@ -138,7 +133,6 @@
 						<span class="am-icon-spinner am-icon-spin"></span>
 					</div>
 				</div>
-				
 
 			</div>
 		</div>
@@ -156,7 +150,6 @@
 		</script>
 		<script src="js/amazeui.min.js"></script>
 		<script type="text/javascript">
-
 			var fresh_count = 5;
 			URL = "http://laiber.wenjiangtao.me:3000";
 			(function($) {
@@ -204,6 +197,7 @@
 							default:
 								break;
 						}
+						
 						$.ajax({
 							type: "post",
 							url: URL + "/mobile_app/posts/get",
@@ -292,7 +286,7 @@
 						console.log('handle pull down');
 						this.setLoading($pullDown);
 						var _id = localStorage.getItem('posts_for_top[id]');
-						this.fresh('refresh', _id, false);
+						this.fresh('refresh', _id, true);
 					};
 					this.handlePullUp = function() {
 						console.log('handle pull up');
@@ -349,7 +343,7 @@
 //				//		console.log($.param(dataFormLi));
 //				//		var dataFormLi = [$(item).children("#title").html(),$(item).children("#name").html(),$(item).val(),$(item).children("#content").html()];
 //				var d = JSON.stringify(dataFormLi);
-				window.location = "article_details.html?id=" + id;
+				window.location = "details.html?id=" + id;
 				//		alert($(this).css("color","red"));
 				//var dataFormLi = [$('#title')]
 			}
@@ -380,7 +374,7 @@
 						console.log('click')
 						var id = $(item).children('#id').html();
 						console.log(id);
-						window.location = "article_details.html?id=" + id;			
+						window.location = "details.html?id=" + id;			
 					}
 				}
 		</script>
